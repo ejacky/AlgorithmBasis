@@ -87,6 +87,80 @@ typedef struct {
 	AvlNode *root;
 } AVLDISJSETS; 
 
+int height(AvlNode *t)
+{
+	return t == NULL? -1: t->height;
+}
+
+int max(int x, int y)
+{
+	return x > y? x: y;
+}
+
+void insertEle(int x, AVLDISJSETS *set)
+{
+	insertAvl(x, &set->root); 
+}
+
+void insertAvl(int x, AvlNode **ptr)
+{
+	AvlNode *t = *ptr;
+	if (t == NULL) {
+		*ptr = t = (AvlNode *) malloc(sizeof(AvlNode)); 
+		t->ele = x;
+		t->left = t->right = NULL;
+	} else if (x < t->ele) {
+		insertAvl(x, &t->left);
+		if (height(t->left) - height(t->right) == 2) {
+			if (x < t->left->ele)
+			    rotateWithLeftChild(ptr);
+			else 
+			    doubleWithLeftChild(ptr);
+		}
+	} else if (x > t->ele) {
+		insertAvl(x, &t->right);
+		if (x > t->right->ele)
+			rotateWithRightChild(ptr);
+		else
+			doubleWithRightChild(ptr);
+	} else; // ÎÊÌâ
+	t->height = max(height(t->left), height(t->right)) + 1;  
+}
+
+void rotateWithLeftChild(AvlNode **k2pt)
+{
+	AvlNode *k1, *k2 = *k2pt;
+	k1 = k2->left;
+	k2->left = k1->right;
+	k1->right = k2;
+	k2->height = max(height(k2->left), height(k2->right)) + 1;
+	k1->height = max(height(k1->left), k2->height) + 1;
+	*k2pt = k1; 
+}
+
+void rotateWithRightChild(AvlNode **k2pt)
+{
+	AvlNode *k1, *k2 = *k2pt;
+	k1 = k2->right;
+	k2->right = k1->left;
+	k1->left = k2;
+	k2->height = max(height(k2->left), height(k2->right)) + 1;
+	k1->height = max(height(k1->left), k2->height) + 1;
+	*k2pt = k1; 
+}
+
+void doubleWithLeftChild(AvlNode **k1pt)
+{
+	rotateWithRightChild(&(*k1pt)->left);
+	rotateWithLeftChild(k1pt);
+}
+
+void doubleWithRightChild(AvlNode **k1pt)
+{
+	rotateWithLeftChild(&(*k1pt)->right);
+	rotateWithRightChild(k1pt);
+} 
+
 
 int main()
 {
