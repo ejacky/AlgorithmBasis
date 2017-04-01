@@ -266,7 +266,46 @@ void quickSort(int e[], int n)
 {
 	quickS(e, 0, n - 1);
 } 
-  
+
+
+//  归并排序， 有递归和非递归两种。 一下为非递归 
+// 对有序序列进行合并 
+void merge(int *x, int *y, int low, int m, int high) 
+{
+	int i = low,  j = m + 1, k = low;
+	while (i <= m && j < = high)
+		y[k++] = (x[i] <= x[j ])? x[i++]: x[j++];
+	while(j <= m) y[k++] = x[i++];
+	while(j <= high) y[k++] = x[j++]; 
+}
+
+void mergePass(int *x, int *y, int n, int len)
+{
+	int i = 0, j;
+	while(i + 2 * len < n) {
+		merge(x, y, i, i + len - 1, i + 2 * len - 1);
+		i += 2 * len;
+	}
+	if (i + len <= n - 1)
+		merge(x, y, i, i + len - 1, n - 1);
+	else 
+		for (j = i; j < n - 1; j++)
+			y[j] = x[j];
+}
+
+void mergeSort(int *x, int n)
+{
+	int *t; int len;
+	t = (int *) malloc(n * sizeof(int));
+	len = 1;
+	while (len < n) {
+		mergePass(x, t, n, len);
+		len *= 2;
+		mergePass(t, x, n, len);
+		len *= 2;
+	}
+	free(t);
+}
 
 void test() 
 {
